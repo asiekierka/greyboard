@@ -1,0 +1,12 @@
+{
+  "name": "grayboard",
+  "description": "simple html5 whiteboard app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.x",
+    "socket.io": "0.9.x",
+    "canvas": "1.x",
+    "JSON2": "0.1.x"
+  }
+}

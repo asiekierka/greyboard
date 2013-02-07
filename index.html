@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Grayboard</title>
+<link rel="stylesheet" href="/fonts/font-awesome.min.css">
+<link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.0.custom.min.css">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<style>
+body {
+  background-color: #D8D8D8;
+}
+.hidden {
+  display: none !important;
+}
+/* http://stackoverflow.com/questions/7059039/how-to-prevent-accidental-select-drag-highlight-on-webpage-when-drawing-off-html */ 
+#tools > a, #tools > a:link, #tools > a:visited, #tools > a:hover {
+  color: #eee;
+  text-decoration: none;
+}
+#tools > a:hover {
+  text-shadow: #ddd 0px 0px 6px;
+}
+.icon > img {
+  width: 24px;
+  height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+  padding: 0;
+  margin: 0;
+}
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  top: -2px;
+}
+.icon.selected {
+  background-color: #44A;  
+}
+.unselectable {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#canv_box {
+  text-align: left;
+  margin: 0 auto;
+}
+#colpre {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  position: relative;
+  top: 2px;
+}
+#colpick {
+  position: relative;
+  z-index: 2;
+  bottom: 197px;
+}
+#canv {
+  position: relative;
+}
+#tools {
+  text-align: left;
+  font-weight: bold;
+  font-size: 16px;
+  margin: 0 auto;
+  padding: 0 4px 0 4px;
+  height: 24px;
+  background-color: #111;
+  color: #eee;
+}
+.bar {
+  width: 1px;
+  height: 16px;
+  position: relative;
+  top: 2px;
+  background-color: #999;
+  display: inline-block;
+}
+.break {
+  width: 16px;
+  display: inline-block;
+}
+.inline {
+  display: inline;
+}
+#smoothslider {
+  display: inline-block:
+  width: 100px;
+  position: relative;
+  top: 4px;
+}
+#chat {
+  margin-top: 12px;
+}
+#chatbox {
+  margin-bottom: 4px;
+  resize: none;
+  width: 400px;
+  height: 125px;
+}
+.textbox {
+  cursor: not-allowed;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border linear .2s, box-shadow linear .2s;
+  -moz-transition: border linear .2s, box-shadow linear .2s;
+  -o-transition: border linear .2s, box-shadow linear .2s;
+  transition: border linear .2s, box-shadow linear .2s;
+  padding: 4px 6px;
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-border-radius: 4px;  
+  -moz-border-radius: 4px;  
+  border-radius: 4px;  
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: normal;
+  overflow: auto;
+  white-space: pre-wrap;      /* CSS3 */   
+  white-space: -moz-pre-wrap; /* Firefox */    
+  white-space: -pre-wrap;     /* Opera old */   
+  white-space: -o-pre-wrap;   /* Opera 7 */ 
+  word-wrap: break-word;      /* IE */
+  text-align: left;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+}
+.textbox:hover {
+  border-color: rgba(82, 168, 236, 0.8);
+  outline: 0;
+  outline: thin dotted 9;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
+}
+/* Source: http://snipplr.com/view/10979/css-cross-browser-word-wrap */
+#chatmsg {
+  width: 324px;
+  margin: 0 4px;
+}
+#chatsubmit {
+  margin: 0 0;
+  width: 68px;
+}
+</style>
+</head>
+<body>
+<div class="container" style="text-align: center;">
+<br><h1>Grayboard</h1><br>
+<!--[if lte IE 9]>
+<div id="ie6warn">
+<h1>WARNING: Internet Explorer is NOT supported.</h1>
+<h1>Your mileage may vary.</h1>
+<div>
+<![endif]-->
+<div id="loading">
+<h4><i class="icon-spinner icon-spin"></i></h4><br>
+</div>
+<div id="grayboard" style="display: none;">
+<div id="canv_box">
+<canvas class="unselectable" id="canv" width="640" height="400"></canvas>
+<canvas class="unselectable" id="colpick" width="248" height="192"></canvas>
+</div>
+<div id="tools">
+<div id="colpre"></div>
+Color <a href="#" id="toggle_color"><i class="icon-plus" id="color_icon_off"></i><i class="icon-minus" id="color_icon_on"></i></a>
+<div class="bar"></div>
+Size: <a href="#" id="size_minus"><i class="icon-minus"></i></a><span id="size_val">...</span>
+<a href="#" id="size_plus"><i class="icon-plus"></i></a>
+<div class="bar"></div>
+Smoothen <input type="checkbox" id="smooth"></input><div class="break"></div><span id="smoothslider"></span>
+<div class="bar"></div>
+<a href="#" id="btn_brush" class="icon selected"><img src="/img/brush.png"></img></a><!--
+--><a href="#" id="btn_eraser" class="icon"><img src="/img/eraser.png"></img></a><!--
+--><a href="#" id="btn_eyedropper" class="icon"><img src="/img/eyedropper.png"></img></a><!--
+--><a href="#" id="btn_floodfill" class="icon hidden"><img src="/img/floodfill.png"></img></a>
+<div class="bar"></div>
+<a href="download"><i class="icon-save"></i></a>
+</div>
+<div id="chat">
+<div id="chatbox" class="textbox"></div><br>
+<input type="text" id="chatmsg" size="70" placeholder="Message"></input><button id="chatsubmit" type="button">Send</button>
+</div>
+</div>
+<h6>Tool icons from <a href="http://www.designcontest.com/">http://www.designcontest.com/</a></h6>
+</div>
+<script src="/js/LAB.min.js"></script>
+<script>
+  var config = {};
+  config.room = "ROOMNAMEHERE";
+  config.socketURL = "SOCKETURLHERE";
+  config.socketWaitTime = 100;
+  $LAB
+  .script("/socket.io/socket.io.js")
+  .script("/js/tinycolor.js")
+  .script("/js/URI.min.js")
+  .script("/js/json2.js")
+  .script("/lib/grayboard-util.js")
+  .script("/js/jquery-1.9.0.min.js").wait()
+  .script("/js/bootstrap.min.js")
+  .script("/lib/colorpicker.js")
+  .script("/lib/grayboard-canvas.js")
+  .script("/js/jquery-ui-1.10.0.custom.min.js").wait()
+  .script("/lib/grayboard.js")
+  .wait(function() {
+    initGrayboard();
+  });
+</script>
+</body>
+</html>
