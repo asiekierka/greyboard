@@ -32,6 +32,7 @@ Libraries used
 * Socket.io
 * JSON2
 * Tinycolor
+* Underscore.js
 
 On the server side only:
 * Express web framework
