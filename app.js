@@ -11,14 +11,18 @@ var express = require('express')
 eval(fs.readFileSync('lib/grayboard-util.js','utf8'));
 eval(fs.readFileSync('lib/grayboard-canvas.js','utf8'));
 
-var config = JSON.parse(fs.readFileSync('config.json','utf8'))
+var configFile = JSON.parse(fs.readFileSync('config.json','utf8'))
   , configDef = JSON.parse(fs.readFileSync('config-default.json','utf8'))
   , NodeCanvas = require('canvas')
   , Room = require('./types.js').Room
   , User = require('./types.js').User
   , Chat = require('./chat.js').Chat;
 
-Room.defaultConfig = _.defaults(config,configDef);
+var config = _.defaults(configFile,configDef);
+
+for(var key in config)
+  if(_.isObject(config[key]))
+    config[key] = _.defaults(configFile[key],configDef[key]);
 
 server.listen(config.port);
 
@@ -84,7 +88,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('join_room', function(data) {
     roomName = Room.getName(data);
     socket.join(data);
-    var room = Room.create(roomName);
+    var room = Room.create(roomName,config.room);
     var chat = new Chat(room,config.chat);
     var user = new User(socket,"");
     user.genNickname(room.config.nickname);

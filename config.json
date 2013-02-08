@@ -1,4 +1,6 @@
 { "port": 8080,
-  "nickname": "Anonymous"
+  "room": {
+    "nickname": "Anonymous"
+  }
 }
 

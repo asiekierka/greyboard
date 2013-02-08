@@ -1,23 +1,26 @@
 // Dependencies
 var NodeCanvas = require('canvas'),
     fs = require('fs'),
-    JSON = require('JSON2');
+    JSON = require('JSON2'),
+    _ = require('underscore');
 
 // Constructor
-var Room = function(name,width,height) {
+var Room = function(name,defConfig) {
   console.log("Created room " + name);
   this.name = name;
-  if(!this.loadConfig()) this.defaultConfig(width,height);
+  if(!this.loadConfig(defConfig)) this.config = defConfig;
+  this.width = this.config.width; this.height = this.config.height;
   this.nodeCanvas = new NodeCanvas(this.width,this.height);
   this.canvas = new Canvas(undefined,this.nodeCanvas.getContext('2d'),this.width,this.height);
+  this.canvas.clear();
   this.loadBackup();
   this.autoBackup();
   this.users = new Array();
 }
 Room.rooms = new Array();
-Room.create = function(name) {
-  if(typeof Room.rooms[name] == "undefined")
-    Room.rooms[name] = new Room(name);
+Room.create = function(name,config) {
+  if(_.isUndefined(Room.rooms[name]))
+    Room.rooms[name] = new Room(name,config);
   return Room.rooms[name];
 }
 Room.remove = function(name) {
@@ -36,16 +39,14 @@ Room.prototype.getName = function() { return this.name; }
 Room.prototype.getPath = function() { return "rooms/" + this.name + "/"; }
 
 // Config load/save
-Room.prototype.loadConfig = function(json) {
-  if(this.config) return true;
+Room.prototype.loadConfig = function(defConfig) {
   try {
-    this.config = json || JSON.parse(fs.readFileSync(this.getPath() + 'config.json','utf8'));
-    if(!this.config) return false;
-    this.width = this.config.width;
-    this.height = this.config.height;
+    var config = JSON.parse(fs.readFileSync(this.getPath() + 'config.json','utf8'));
+    if(!config) return false;
+    this.config = _.defaults(config, defConfig);
     return true;
   }
-  catch(e) {}
+  catch(e) { return false; }
 }
 
 Room.prototype.getInitString = function() {
@@ -53,10 +54,6 @@ Room.prototype.getInitString = function() {
   cmd.width = this.width;
   cmd.height = this.height;
   return JSON.stringify(cmd);
-}
-
-Room.prototype.defaultConfig = function() { 
-  return this.loadConfig(Room.defaultConfig);
 }
 
 // User handling
