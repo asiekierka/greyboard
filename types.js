@@ -104,6 +104,8 @@ Room.prototype.listUsers = function() {
 Room.prototype.autoBackup = function() {
   if(!this.config || !this.config.autoBackup || !this.config.autoBackupTime) return;
   var room = this;
+  if(!fs.existsSync(this.getPath()))
+    fs.mkdirSync(this.getPath();
   console.log("Saving room " + this.name);
   this.savePNG(this.getPath() + 'canvas.png');
   setTimeout(function(){ room.autoBackup(true); }, this.config.autoBackupTime*1000);
