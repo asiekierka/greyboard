@@ -81,6 +81,19 @@ Room.findUser = function(id) {
   if(!r) return null;
   return r.getUser(id);
 }
+Room.findUserByName = function(name, caseSensitive) {
+  var cs = caseSensitive || false;
+  for(var r in Room.rooms) {
+    room = Room.get(r);
+    for(var u in room.users) {
+      if(room.users[u] && ((cs && room.users[u].nickname == name) ||
+         (!cs && room.users[u].nickname.toLowerCase() == name.toLowerCase())))
+        return room.users[u];        
+    }
+  }
+  return null;
+}
+Room.findUserId = function(name) { if(Room.findUserByName(name)) { return Room.findUserByName(name).id; } }
 
 Room.prototype.listUsers = function() {
   var userList = new Array();
@@ -125,8 +138,8 @@ Room.prototype.sendPNG = function(req,res,asAttachment) {
   stream.on('end', function(){res.end();});
 }
 
-var User = function(id,nick) {
-  this.id = id; this.nickname = nick;
+var User = function(sock,nick) {
+  this.id = sock.id; this.socket = sock; this.nickname = nick;
 }
 
 User.prototype.setNickname = function(nick) { this.nickname = nick; }

@@ -64,6 +64,21 @@ app.use(function(req,res,next){ // TODO: refactor
   }
 });
 
+function getRoomSocket(room) { return io.sockets.in(room.getChannel()); }
+function getUserSocket(user) { return user.socket; }
+
+function sendChat(socket,sender,msg) {
+  if(_.isString(msg.at)) { // msg.at - message directed at someone else and you [private]
+    var user = Room.findUserByName(msg.at,false);
+    if(user) {
+      var usersock = getUserSocket(user);
+      var sendersock = getUserSocket(sender);
+      usersock.emit('chat_message',msg);
+      sendersock.emit('chat_message',msg);
+    }
+  } else socket.emit('chat_message',msg);
+}
+
 io.sockets.on('connection', function(socket) {
 
   socket.on('join_room', function(data) {
@@ -71,20 +86,21 @@ io.sockets.on('connection', function(socket) {
     socket.join(data);
     var room = Room.create(roomName);
     var chat = new Chat(room,config.chat);
-    var user = new User(socket.id,"");
+    var user = new User(socket,"");
     user.genNickname(room.config.nickname);
     room.addUser(user);
     room.chat = chat;
     socket.emit('init',room.getInitString());
-    socket.emit('chat_message',chat.process('','Welcome to room ' + roomName + '!','server'));
-    socket.broadcast.to(data).emit('chat_message',chat.process("",user.nickname + " has joined the room!","server"));
+    sendChat(socket,null,chat.process('','Welcome to room ' + roomName + '!','server'));
+    sendChat(socket.broadcast.to(data),null,chat.process("",user.nickname + " has joined the room!","server"));
   });
 
   socket.on('chat_send', function(data) {
     var room = Room.findUserRoom(socket.id);
     if(room && room.chat) {
+      var sender = Room.findUser(socket.id);
       var msg = room.chat.process(Room.findUser(socket.id).nickname,data,"client");
-      io.sockets.in(room.getChannel()).emit('chat_message',msg);
+      sendChat(getRoomSocket(room),sender,('chat_message',msg));
     }
   });
 
@@ -112,7 +128,7 @@ io.sockets.on('connection', function(socket) {
         var roomChannel = room.getChannel();
         room.removeUser(socket.id);
         if(room.chat)
-          socket.broadcast.to(roomChannel).emit('chat_message',room.chat.process('',nick + " has left the room!","server"));
+          sendChat('chat_message',null,room.chat.process('',nick + " has left the room!","server"));
       }
     }
   });

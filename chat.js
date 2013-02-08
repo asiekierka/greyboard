@@ -36,7 +36,7 @@ Chat.prototype.commands.list = function(nick,text,mode) {
 Chat.prototype.commands.msg = function(nick,text,mode) {
   var msg = {color: this.config.messageColor, bold: true};
   var cmd = this.parse(text);
-  msg.text = "[Private] " + this.messageText(nick,cmd.unparse(cmd.slice(2)));
+  msg.text = "[Private] " + this.messageText(nick,this.unparse(cmd.slice(2)));
   msg.at = cmd[1];
   return msg;
 }

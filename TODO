@@ -1,7 +1,6 @@
 Mandatory:
 * Refactor app.use in app.js.
 * Refactor a LOT of other code.
-* Fix /msg [add msg.at functionality].
 * Make code run with Underscore better (throttle, isUndefined, etc.)
 
 Recommended:
