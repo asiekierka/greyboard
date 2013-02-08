@@ -128,7 +128,7 @@ io.sockets.on('connection', function(socket) {
         var roomChannel = room.getChannel();
         room.removeUser(socket.id);
         if(room.chat)
-          sendChat('chat_message',null,room.chat.process('',nick + " has left the room!","server"));
+          sendChat(getRoomSocket(room),null,room.chat.process('',nick + " has left the room!","server"));
       }
     }
   });

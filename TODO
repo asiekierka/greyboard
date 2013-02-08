@@ -2,6 +2,7 @@ Mandatory:
 * Refactor app.use in app.js.
 * Refactor a LOT of other code.
 * Make code run with Underscore better (throttle, isUndefined, etc.)
+* Refactor room config (move to room{...})
 
 Recommended:
 * Clean up the UI [move Smoothen to a separate Brush menu. Or hide it entirely for now.]
