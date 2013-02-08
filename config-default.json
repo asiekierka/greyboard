@@ -1,0 +1,14 @@
+{ "_comment": "THIS CONFIG FILE CONTAINS DEFAULT INFORMATION.",
+  "_comment2": "CHANGE CONFIG.JSON INSTEAD.",
+  "width": 800,
+  "height": 480,
+  "port": 80,
+  "nickname": "Anonymous",
+  "chat": {
+    "messageColor": "#101010",
+    "serverColor": "#205080",
+    "meColor": "#701070",
+    "disabled": []
+  }
+}
+

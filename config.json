@@ -1,6 +1,4 @@
-{ "width": 640,
-  "height": 580,
-  "port": 8080,
+{ "port": 8080,
   "nickname": "Anonymous"
 }
 
