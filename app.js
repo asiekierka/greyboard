@@ -27,7 +27,7 @@ for(var key in config)
 server.listen(config.port);
 
 // Reserved room names
-var disallowedRooms = new Array("", "css", "fonts", "img", "js", "lib", "room", "user", "list");
+var blockedDirs = new Array("css", "fonts", "img", "js", "lib");
 
 // Lookup dirs
 app.use(express.static('static'));
@@ -43,28 +43,41 @@ function sendPNG(req,res,room,asAttachment) {
   Room.get(room).sendPNG(req,res,asAttachment);
 }
 
-app.use(function(req,res,next){ // TODO: refactor
+function sendRoomIndex(req,res,room) {
+  var localIndex = grayboardIndex.replace("ROOMNAMEHERE",room).replace("SOCKETURLHERE",config.socketURL);
+  res.type("text/html");
+  res.send(localIndex);
+}
+
+function splitURL(url) {
+  if(url.indexOf("/") == 0)
+    return url.substr(1).split("/");
+  if(url.length == 0)
+    return null;
+  return url.split("/");
+}
+
+app.use(function(req,res,next){
   var url = req.url;
-  var room = "default";
-  var params = "";
-  if(url.indexOf("/") == 0) // Detect first slash (beginning)
-    url = url.substr(1);
-  if(url.indexOf("/") >= 0) { // Detect second slash (cut from there)
-    room = url.substr(0,url.indexOf("/"));
-    params = url.substr(url.indexOf("/")+1);
-  } else room = url;
-  room = room.toLowerCase(); // ensure lowercase room names
-  if(disallowedRooms.indexOf(room)>=0) { // css, fonts, img, etc.
+  var cmds = splitURL(url);
+  if(_.isUndefined(cmds)) cmds = ["rooms", "default"];
+  var cmd = cmds[0];
+  if(blockedDirs.indexOf(cmd)>=0) { // css, fonts, img, etc.
     res.writeHead(403,{});
     res.end();
     return;
-  } else mode = "room";
-  if(params.indexOf("canvas")>=0) { sendPNG(req,res,room,false); }
-  else if(params.indexOf("download")>=0) { sendPNG(req,res,room,true); }
-  else {
-    var localIndex = grayboardIndex.replace("ROOMNAMEHERE",room).replace("SOCKETURLHERE",config.socketURL);
-    res.type("text/html");
-    res.send(localIndex);
+  }
+  // Determine mode of action
+  if(cmd != "rooms") {  // FIXME: Remove this once multiple kinds of rooms are in.
+    cmd = "rooms";
+    cmds.unshift(cmd);
+  }
+  if(cmd == "rooms") {
+    var room = cmds[1] || "default"
+      , params = cmds[2] || "";
+    if(params.indexOf("canvas")>=0) { sendPNG(req,res,room,false); }
+    else if(params.indexOf("download")>=0) { sendPNG(req,res,room,true); }
+    else { sendRoomIndex(req,res,room); }
   }
 });
 
