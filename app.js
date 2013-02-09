@@ -110,6 +110,24 @@ function sendChat(socket,sender,msg) {
   } else socket.emit('chat_message',msg);
 }
 
+function flushBuffer() {
+  for(var key in Room.rooms) {
+    var room = Room.rooms[key];
+    if(_.isObject(room) && room.buffer.length > 0) {
+      io.sockets.in(room.getChannel()).emit('draw_commands',room.buffer);
+      room.buffer = [];
+    }
+  }
+  setTimeout(flushBuffer,50);
+}
+
+function sendCommand(room,cmd) {
+  if(_.isObject(cmd) && _.isObject(room))
+    room.buffer.push(cmd);
+}
+
+flushBuffer();
+
 io.sockets.on('connection', function(socket) {
 
   socket.on('join_room', function(data) {
@@ -121,7 +139,7 @@ io.sockets.on('connection', function(socket) {
     user.genNickname(room.config.nickname);
     room.addUser(user);
     room.chat = chat;
-    socket.emit('init',room.getInitString());
+    socket.emit('init',room.getInitCmd());
     sendChat(socket,null,chat.process('','Welcome to room ' + roomName + '!','server'));
     sendChat(socket.broadcast.to(data),null,chat.process("",user.nickname + " has joined the room!","server"));
   });
@@ -138,13 +156,13 @@ io.sockets.on('connection', function(socket) {
   socket.on('draw_command', function(data) {
     console.log("Received drawCommand: " + data);
     try {
-      var cmd = JSON.parse(data);
+      var cmd = data;
       if(properCommand(cmd) && Room.findUserRoom(socket.id)) {
         var room = Room.findUserRoom(socket.id);
-        var roomName = room.getChannel();
         var canvas = room.canvas;
         drawCommand(cmd,canvas,"server");
-        socket.broadcast.to(roomName).emit('draw_command',data);
+        cmd.id = socket.id;
+        sendCommand(room,cmd);
       }
     } catch(e) {
       console.log("Error: " + e.message);

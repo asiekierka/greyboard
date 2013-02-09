@@ -11,6 +11,7 @@ var Room = function(name,defConfig) {
   if(!this.loadConfig(defConfig)) this.config = defConfig;
   this.width = this.config.width; this.height = this.config.height;
   this.displayedName = this.config.name || this.name;
+  this.buffer = [];
   this.nodeCanvas = new NodeCanvas(this.width,this.height);
   this.canvas = new Canvas(null,this.nodeCanvas.getContext('2d'),this.width,this.height);
   this.canvas.clear();
@@ -61,11 +62,8 @@ Room.prototype.loadConfig = function(defConfig) {
   catch(e) { return false; }
 }
 
-Room.prototype.getInitString = function() {
-  var cmd = {};
-  cmd.width = this.width;
-  cmd.height = this.height;
-  return JSON.stringify(cmd);
+Room.prototype.getInitCmd = function() {
+  return {width: this.width, height: this.height};
 }
 
 // User handling
