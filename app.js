@@ -160,9 +160,10 @@ io.sockets.on('connection', function(socket) {
       if(properCommand(cmd) && Room.findUserRoom(socket.id)) {
         var room = Room.findUserRoom(socket.id);
         var canvas = room.canvas;
-        drawCommand(cmd,canvas,"server");
-        cmd.id = socket.id;
-        sendCommand(room,cmd);
+        if(drawCommand(cmd,canvas,"server")) {
+          cmd.id = socket.id;
+          sendCommand(room,cmd);
+        }
       }
     } catch(e) {
       console.log("Error: " + e.message);
