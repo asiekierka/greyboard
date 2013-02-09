@@ -25,7 +25,7 @@ Room.create = function(name,config) {
   return Room.rooms[name];
 }
 Room.remove = function(name) {
-  Room.rooms[name] = null;
+  delete Room.rooms[name];
 }
 Room.exists = function(name) {
   return _.isObject(Room.rooms[name]);
@@ -71,7 +71,7 @@ Room.prototype.getInitString = function() {
 // User handling
 Room.prototype.addUser = function(user) { user.room = this; this.users[user.id] = user; }
 Room.prototype.getUser = function(id) { return this.users[id]; }
-Room.prototype.removeUser = function(id) { this.users[id] = null; }
+Room.prototype.removeUser = function(id) { delete this.users[id]; }
 Room.findUserRoom = function(id) {
   for(var r in Room.rooms) {
     room = Room.get(r);
@@ -107,7 +107,8 @@ Room.findUserId = function(name) { if(Room.findUserByName(name)) { return Room.f
 Room.prototype.listUsers = function() {
   var userList = new Array();
   for(var k in this.users) {
-    userList.push(this.users[k].nickname);
+    if(_.isObject(this.users[k]))
+      userList.push(this.users[k].nickname);
   }
   return userList;
 }
