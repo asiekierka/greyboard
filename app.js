@@ -82,16 +82,19 @@ app.use(function(req,res,next){
 });
 
 function getRoomSocket(room) { return io.sockets.in(room.getChannel()); }
-function getUserSocket(user) { return user.socket; }
+function getUserSocket(user) {
+  if(!(_.isObject(user))) return null;
+  return user.socket;
+}
 
 function sendChat(socket,sender,msg) {
-  if(_.isString(msg.at)) { // msg.at - message directed at someone else and you [private]
-    var user = Room.findUserByName(msg.at,false);
-    if(user) {
-      var usersock = getUserSocket(user);
-      var sendersock = getUserSocket(sender);
-      usersock.emit('chat_message',msg);
-      sendersock.emit('chat_message',msg);
+  if(_.isArray(msg.at)) { // msg.at - message directed at specific nicknames
+    for(var key in msg.at) {
+      var nick = msg.at[key];
+      var user = Room.findUserByName(nick);
+      var sock = getUserSocket(user);
+      if(_.isObject(sock))
+        sock.emit('chat_message',msg);
     }
   } else socket.emit('chat_message',msg);
 }

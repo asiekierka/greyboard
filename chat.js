@@ -37,7 +37,8 @@ Chat.prototype.commands.msg = function(nick,text,mode) {
   var msg = {color: this.config.messageColor, bold: true};
   var cmd = this.parse(text);
   msg.text = "[Private] " + this.messageText(nick,this.unparse(cmd.slice(2)));
-  msg.at = cmd[1];
+  msg.at = [cmd[1], nick];
+  if(cmd[1].toLowerCase() == nick.toLowerCase()) msg.at = [nick];
   return msg;
 }
 
@@ -45,6 +46,7 @@ Chat.prototype.messageText = function(nick,text) { return "<"+nick+"> "+text; }
 Chat.prototype.announcementText = function(text) { return "* " + text; }
 Chat.prototype.message = function(nick,text) { return {color: this.config.messageColor, bold: false, text: this.messageText(nick,text)}; }
 Chat.prototype.announcement = function(text) { return {color: this.config.serverColor, bold: true, text: this.announcementText(text)}; }
+Chat.prototype.selfAnnouncement = function(nick,text) { return {at: [nick], color: this.config.serverColor, bold: true, text: this.announcementText(text)}; }
 
 Chat.prototype.process = function(nick,text,mode) {
   if(text.indexOf("/")==0) {
@@ -52,9 +54,9 @@ Chat.prototype.process = function(nick,text,mode) {
     if(_.contains(this.allowedCommands,func))
       return this.commands[func](nick,text,mode)
     else if(_.contains(_.functions(this.commands),func)) 
-      return this.announcement("Function /"+func+" has been disabled!");
+      return this.selfAnnouncement(nick,"Function /"+func+" has been disabled!");
     else
-      return this.announcement("Unknown command /"+func+"!");
+      return this.selfAnnouncement(nick,"Unknown command /"+func+"!");
   }
   if(mode=="client") return this.message(nick,text);
   else return this.announcement(text);
