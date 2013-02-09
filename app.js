@@ -13,8 +13,8 @@ eval(fs.readFileSync('lib/grayboard-canvas.js','utf8'));
 var configFile = JSON.parse(fs.readFileSync('config.json','utf8'))
   , configDef = JSON.parse(fs.readFileSync('config-default.json','utf8'))
   , NodeCanvas = require('canvas')
-  , Room = require('./types.js').Room
-  , User = require('./types.js').User
+  , Room = require('./room.js').Room
+  , User = require('./user.js').User
   , Chat = require('./chat.js').Chat;
 
 function createTemplate(name) {
