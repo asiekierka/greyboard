@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Greyboard</title>
+  <link rel="stylesheet" href="/fonts/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.0.custom.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/room.css">
+</head>
+<body>
+  <div class="container" style="text-align: center;">
+  <br><h1>Greyboard</h1><br>
+
+  <!--[if lte IE 9]>
+  <div id="ie6warn">
+    <h1>WARNING: Internet Explorer is NOT supported.</h1>
+    <h1>Your mileage may vary.</h1>
+  <div>
+  <![endif]-->
+
+  <div id="loading">
+    <h4><i class="icon-spinner icon-spin"></i></h4><br>
+  </div>
+  <div id="grayboard" style="display: none;">
+    <div id="canv_box">
+      <canvas class="unselectable" id="canv" width="640" height="400"></canvas>
+      <canvas class="unselectable" id="colorpicker" width="248" height="192"></canvas>
+    </div>
+    <div id="tools">
+      <div id="color_preview"></div>
+      Color <a href="#" id="toggle_color"><i class="icon-plus" id="color_icon_off"></i><i class="icon-minus" id="color_icon_on"></i></a>
+      <div class="bar"></div>
+      Size: <a href="#" id="size_minus"><i class="icon-minus"></i></a>
+            <span id="size_val">...</span>
+            <a href="#" id="size_plus"><i class="icon-plus"></i></a>
+      <div class="bar"></div>
+      Smoothen <input type="checkbox" id="smooth"></input><div class="break"></div><span id="smoothslider"></span>
+      <div class="bar"></div>
+      <a href="#" id="btn_brush" class="icon selected"><img src="/img/brush.png"></img></a><!--
+   --><a href="#" id="btn_eraser" class="icon"><img src="/img/eraser.png"></img></a><!--
+   --><a href="#" id="btn_eyedropper" class="icon"><img src="/img/eyedropper.png"></img></a><!--
+   --><a href="#" id="btn_floodfill" class="icon hidden"><img src="/img/floodfill.png"></img></a>
+      <div class="bar"></div>
+      <a href="download"><i class="icon-save"></i></a>
+    </div>
+    <div id="chat">
+      <div id="chatbox" class="textbox"></div><br>
+      <input type="text" id="chatmsg" size="70" placeholder="Message"></input><button id="chatsubmit" type="button">Send</button>
+    </div>
+  </div>
+  <h6>Tool icons from <a href="http://www.designcontest.com/">http://www.designcontest.com/</a></h6>
+</div>
+<script src="/js/LAB.min.js"></script>
+<script>
+  var config = {};
+  config.room = '<%= room %>';
+  config.socketURL = '<%= socketURL %>';
+  config.socketWaitTime = 100;
+  /* HTML file specific */
+  config.canvasId = "canv";
+  config.colorPickerId = "colorpicker";
+  config.toolboxId = "tools";
+  /* Loaded files */
+  $LAB
+  .script("/socket.io/socket.io.js")
+  .script("/js/tinycolor.js")
+  .script("/js/URI.min.js")
+  .script("/js/json2.js")
+  .script("/js/underscore-min.js")
+  .script("/lib/grayboard-util.js")
+  .script("/js/jquery-1.9.0.min.js").wait()
+  .script("/js/bootstrap.min.js")
+  .script("/lib/colorpicker.js")
+  .script("/lib/grayboard-canvas.js")
+  .script("/js/jquery-ui-1.10.0.custom.min.js").wait()
+  .script("/lib/grayboard.js")
+  .wait(function() {
+    initGrayboard();
+  });
+</script>
+</body>
+</html>

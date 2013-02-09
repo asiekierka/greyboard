@@ -4,7 +4,6 @@ var express = require('express')
   , io = require('socket.io').listen(server)
   , JSON = require('JSON2')
   , fs = require("fs")
-  , grayboardIndex = fs.readFileSync('index.html','utf8')
   , _ = require('underscore');
 
 // People would murder for this line. It's really bad.
@@ -17,6 +16,13 @@ var configFile = JSON.parse(fs.readFileSync('config.json','utf8'))
   , Room = require('./types.js').Room
   , User = require('./types.js').User
   , Chat = require('./chat.js').Chat;
+
+function createTemplate(name) {
+  return _.template(fs.readFileSync('templates/'+name+'.html', 'utf8'));
+}
+
+var templates = {};
+templates.room = createTemplate("room");
 
 var config = _.defaults(configFile,configDef);
 
@@ -44,7 +50,7 @@ function sendPNG(req,res,room,asAttachment) {
 }
 
 function sendRoomIndex(req,res,room) {
-  var localIndex = grayboardIndex.replace("ROOMNAMEHERE",room).replace("SOCKETURLHERE",config.socketURL);
+  var localIndex = templates.room({ room: room, socketURL: config.socketURL });
   res.type("text/html");
   res.send(localIndex);
 }
@@ -60,7 +66,7 @@ function splitURL(url) {
 app.use(function(req,res,next){
   var url = req.url;
   var cmds = splitURL(url);
-  if(_.isUndefined(cmds)) cmds = ["rooms", "default"];
+  if(_.isUndefined(cmds)) cmds = ["room", "default"];
   var cmd = cmds[0];
   if(blockedDirs.indexOf(cmd)>=0) { // css, fonts, img, etc.
     res.writeHead(403,{});
@@ -68,11 +74,11 @@ app.use(function(req,res,next){
     return;
   }
   // Determine mode of action
-  if(cmd != "rooms") {  // FIXME: Remove this once multiple kinds of rooms are in.
-    cmd = "rooms";
+  if(cmd != "room") {  // FIXME: Remove this once multiple kinds of rooms are in.
+    cmd = "room";
     cmds.unshift(cmd);
   }
-  if(cmd == "rooms") {
+  if(cmd == "room") {
     var room = cmds[1] || "default"
       , params = cmds[2] || "";
     if(params.indexOf("canvas")>=0) { sendPNG(req,res,room,false); }
