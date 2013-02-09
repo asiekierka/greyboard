@@ -29,7 +29,12 @@ Room.remove = function(name) {
 Room.exists = function(name) {
   return _.isObject(Room.rooms[name]);
 }
-
+Room.list = function() {
+  var list = {};
+  for(var name in Room.rooms)
+    list.push(name);
+  return list;
+}
 // Setters/getters
 Room.getChannel = function(name) { return "room_" + name; }
 Room.getName = function(ch) { return ch.replace("room_",""); }
