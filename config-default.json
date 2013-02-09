@@ -11,7 +11,8 @@
     "width": 800,
     "height": 480,
     "nickname": "Anonymous",
-    "autoBackup": false
+    "autoBackup": false,
+    "public": true
   }
 }
 

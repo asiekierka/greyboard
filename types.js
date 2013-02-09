@@ -10,6 +10,7 @@ var Room = function(name,defConfig) {
   this.name = name;
   if(!this.loadConfig(defConfig)) this.config = defConfig;
   this.width = this.config.width; this.height = this.config.height;
+  this.displayedName = this.config.name || this.name;
   this.nodeCanvas = new NodeCanvas(this.width,this.height);
   this.canvas = new Canvas(null,this.nodeCanvas.getContext('2d'),this.width,this.height);
   this.canvas.clear();
@@ -32,7 +33,13 @@ Room.exists = function(name) {
 Room.list = function() {
   var list = {};
   for(var name in Room.rooms)
-    list.push(name);
+    if(Room.rooms[name].config.public) list.push(name);
+  return list;
+}
+Room.listNames = function() {
+  var list = {};
+  for(var name in Room.rooms)
+    if(Room.rooms[name].config.public) list[name] = Room.rooms[name].name;
   return list;
 }
 // Setters/getters

@@ -23,6 +23,7 @@ function createTemplate(name) {
 
 var templates = {};
 templates.room = createTemplate("room");
+templates.roomList = createTemplate("roomlist");
 
 var config = _.defaults(configFile,configDef);
 
@@ -49,11 +50,12 @@ function sendPNG(req,res,room,asAttachment) {
   Room.get(room).sendPNG(req,res,asAttachment);
 }
 
-function sendRoomIndex(req,res,room) {
-  var localIndex = templates.room({ room: room });
+function sendTemplate(res,tpl,config) {
+  var localIndex = tpl(config);
   res.type("text/html");
   res.send(localIndex);
 }
+function sendRoomIndex(res,room) { sendTemplate(res,templates.room,{room: room}); }
 
 function splitURL(url) {
   if(url.indexOf("/") == 0)
@@ -66,7 +68,8 @@ function splitURL(url) {
 app.use(function(req,res,next){
   var url = req.url;
   var cmds = splitURL(url);
-  if(_.isUndefined(cmds)) cmds = ["room", "default"];
+  if(cmds.length==0 || (cmds.length==1 && cmds[0] == '')) // Default
+    cmds = ['list'];
   var cmd = cmds[0];
   if(blockedDirs.indexOf(cmd)>=0) { // css, fonts, img, etc.
     res.writeHead(403,{});
@@ -74,16 +77,18 @@ app.use(function(req,res,next){
     return;
   }
   // Determine mode of action
-  if(cmd != "room") {  // FIXME: Remove this once multiple kinds of rooms are in.
-    cmd = "room";
-    cmds.unshift(cmd);
-  }
-  if(cmd == "room") {
+  if(cmd == "list") {
+    sendTemplate(res,templates.roomList,{rooms: Room.listNames()});
+  } else {
+    if(cmd != "room") {
+      cmd = "room";
+      cmds.unshift(cmd);
+    }
     var room = cmds[1] || "default"
       , params = cmds[2] || "";
     if(params.indexOf("canvas")>=0) { sendPNG(req,res,room,false); }
     else if(params.indexOf("download")>=0) { sendPNG(req,res,room,true); }
-    else { sendRoomIndex(req,res,room); }
+    else { sendRoomIndex(res,room); }
   }
 });
 

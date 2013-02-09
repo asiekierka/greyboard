@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Greyboard</title>
+  <link rel="stylesheet" href="/fonts/font-awesome.min.css">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/greyboard.css">
+</head>
+<body>
+  <div class="container" style="text-align: center;">
+  <br><h1>Greyboard</h1><h3>Room list</h3>
+  <!--[if lte IE 9]>
+  <div id="ie6warn">
+    <h1>WARNING: Internet Explorer is NOT supported.</h1>
+    <h1>Your mileage may vary.</h1>
+  <div>
+  <![endif]-->
+  <div id="rooms">
+    <%
+      for(var key in rooms)
+        print("<a href='/room/"+key+"/'><b>"+rooms[key]+"</b></a><br>");
+    %>
+  </div>
+</div>
+</body>
+</html>
