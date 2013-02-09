@@ -5,7 +5,73 @@
   <link rel="stylesheet" href="/fonts/font-awesome.min.css">
   <link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.0.custom.min.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <link rel="stylesheet" href="/css/room.css">
+  <link rel="stylesheet" href="/css/greyboard.css">
+  <style>
+  /* http://stackoverflow.com/questions/7059039/how-to-prevent-accidental-select-drag-highlight-on-webpage-when-drawing-off-html */ 
+  #tools > a, #tools > a:link, #tools > a:visited, #tools > a:hover {
+    color: #eee;
+    text-decoration: none;
+  }
+  #tools > a:hover {
+    text-shadow: #ddd 0px 0px 6px;
+  }
+  #canv_box {
+    text-align: left;
+    margin: 0 auto;
+  }
+  #color_preview {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 2px;
+  }
+  #colorpicker {
+    position: relative;
+    z-index: 2;
+    bottom: 197px;
+  }
+  #canv {
+    position: relative;
+  }
+  #tools {
+    text-align: left;
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0 auto;
+    padding: 0 4px 0 4px;
+    height: 24px;
+    background-color: #111;
+    color: #eee;
+  }
+  #smoothslider {
+    display: inline-block:
+    width: 100px;
+    position: relative;
+    top: 4px;
+  }
+  #chat {
+    margin-top: 12px;
+  }
+  #chatbox {
+    margin-bottom: 4px;
+    resize: none;
+    width: 400px;
+    height: 125px;
+  }
+  .break {
+    width: 16px;
+    display: inline-block;
+  }
+  #chatmsg {
+    width: 324px;
+    margin: 0 4px;
+  }
+  #chatsubmit {
+    margin: 0 0;
+    width: 68px;
+  }
+  </style>
 </head>
 <body>
   <div class="container" style="text-align: center;">
@@ -36,10 +102,10 @@
       <div class="bar"></div>
       Smoothen <input type="checkbox" id="smooth"></input><div class="break"></div><span id="smoothslider"></span>
       <div class="bar"></div>
-      <a href="#" id="btn_brush" class="icon selected"><img src="/img/brush.png"></img></a><!--
-   --><a href="#" id="btn_eraser" class="icon"><img src="/img/eraser.png"></img></a><!--
-   --><a href="#" id="btn_eyedropper" class="icon"><img src="/img/eyedropper.png"></img></a><!--
-   --><a href="#" id="btn_floodfill" class="icon hidden"><img src="/img/floodfill.png"></img></a>
+      <a href="#" id="btn_brush" class="menu_icon selected"><img src="/img/brush.png"></img></a><!--
+   --><a href="#" id="btn_eraser" class="menu_icon"><img src="/img/eraser.png"></img></a><!--
+   --><a href="#" id="btn_eyedropper" class="menu_icon"><img src="/img/eyedropper.png"></img></a><!--
+   --><a href="#" id="btn_floodfill" class="menu_icon hidden"><img src="/img/floodfill.png"></img></a>
       <div class="bar"></div>
       <a href="download"><i class="icon-save"></i></a>
     </div>

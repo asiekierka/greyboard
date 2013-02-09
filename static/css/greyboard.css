@@ -4,15 +4,7 @@ body {
 .hidden {
   display: none !important;
 }
-/* http://stackoverflow.com/questions/7059039/how-to-prevent-accidental-select-drag-highlight-on-webpage-when-drawing-off-html */ 
-#tools > a, #tools > a:link, #tools > a:visited, #tools > a:hover {
-  color: #eee;
-  text-decoration: none;
-}
-#tools > a:hover {
-  text-shadow: #ddd 0px 0px 6px;
-}
-.icon > img {
+.menu_icon > img {
   width: 24px;
   height: 24px;
   max-width: 24px;
@@ -20,7 +12,7 @@ body {
   padding: 0;
   margin: 0;
 }
-.icon {
+.menu_icon {
   width: 24px;
   height: 24px;
   display: inline-block;
@@ -29,7 +21,7 @@ body {
   position: relative;
   top: -2px;
 }
-.icon.selected {
+.menu_icon.selected {
   background-color: #44A;  
 }
 .unselectable {
@@ -37,35 +29,6 @@ body {
   -khtml-user-select: none;
   -webkit-user-select: none;
   user-select: none;
-}
-#canv_box {
-  text-align: left;
-  margin: 0 auto;
-}
-#color_preview {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  position: relative;
-  top: 2px;
-}
-#colorpicker {
-  position: relative;
-  z-index: 2;
-  bottom: 197px;
-}
-#canv {
-  position: relative;
-}
-#tools {
-  text-align: left;
-  font-weight: bold;
-  font-size: 16px;
-  margin: 0 auto;
-  padding: 0 4px 0 4px;
-  height: 24px;
-  background-color: #111;
-  color: #eee;
 }
 .bar {
   width: 1px;
@@ -75,27 +38,8 @@ body {
   background-color: #999;
   display: inline-block;
 }
-.break {
-  width: 16px;
-  display: inline-block;
-}
 .inline {
   display: inline;
-}
-#smoothslider {
-  display: inline-block:
-  width: 100px;
-  position: relative;
-  top: 4px;
-}
-#chat {
-  margin-top: 12px;
-}
-#chatbox {
-  margin-bottom: 4px;
-  resize: none;
-  width: 400px;
-  height: 125px;
 }
 .textbox {
   cursor: not-allowed;
@@ -138,13 +82,4 @@ body {
   -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
   box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6);
-}
-/* Source: http://snipplr.com/view/10979/css-cross-browser-word-wrap */
-#chatmsg {
-  width: 324px;
-  margin: 0 4px;
-}
-#chatsubmit {
-  margin: 0 0;
-  width: 68px;
 }
