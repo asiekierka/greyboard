@@ -11,7 +11,7 @@ var Room = function(name,defConfig) {
   if(!this.loadConfig(defConfig)) this.config = defConfig;
   this.width = this.config.width; this.height = this.config.height;
   this.nodeCanvas = new NodeCanvas(this.width,this.height);
-  this.canvas = new Canvas(undefined,this.nodeCanvas.getContext('2d'),this.width,this.height);
+  this.canvas = new Canvas(null,this.nodeCanvas.getContext('2d'),this.width,this.height);
   this.canvas.clear();
   this.loadBackup();
   this.autoBackup();
@@ -27,7 +27,7 @@ Room.remove = function(name) {
   Room.rooms[name] = null;
 }
 Room.exists = function(name) {
-  return (Room.rooms[name] !== undefined);
+  return _.isObject(Room.rooms[name]);
 }
 
 // Setters/getters
@@ -42,7 +42,7 @@ Room.prototype.getPath = function() { return "rooms/" + this.name + "/"; }
 Room.prototype.loadConfig = function(defConfig) {
   try {
     var config = JSON.parse(fs.readFileSync(this.getPath() + 'config.json','utf8'));
-    if(!config) return false;
+    if(_.isUndefined(config)) return false;
     this.config = _.defaults(config, defConfig);
     return true;
   }
@@ -63,19 +63,19 @@ Room.prototype.removeUser = function(id) { this.users[id] = null; }
 Room.findUserRoom = function(id) {
   for(var r in Room.rooms) {
     room = Room.get(r);
-    if(room.getUser(id) !== undefined)
+    if(_.isObject(room.getUser(id)))
       return room;
   }
   return null;
 }
 Room.findUserRoomName = function(id) {
   var r = Room.findUserRoom(id);
-  if(!r) return null;
+  if(_.isUndefined(r)) return null;
   return r.name;
 }
 Room.findUser = function(id) {
   var r = Room.findUserRoom(id);
-  if(!r) return null;
+  if(_.isUndefined(r)) return null;
   return r.getUser(id);
 }
 Room.findUserByName = function(name, caseSensitive) {
@@ -102,7 +102,7 @@ Room.prototype.listUsers = function() {
 
 // PNG/Backups
 Room.prototype.autoBackup = function() {
-  if(!this.config || !this.config.autoBackup || !this.config.autoBackupTime) return;
+  if(_.isUndefined(this.config) || !this.config.autoBackup || _.isUndefined(this.config.autoBackupTime)) return;
   var room = this;
   if(!fs.existsSync(this.getPath()))
     fs.mkdirSync(this.getPath());
@@ -145,7 +145,7 @@ User.prototype.setNickname = function(nick) { this.nickname = nick; }
 
 User.prototype.genNickname = function(pNick) {
   var nick = pNick || config.nick;
-  if(typeof nick !== undefined && nick != "random")
+  if(_.isString(nick) && nick != "random")
     this.nickname = nick + Math.floor((Math.random()*998)+1);
   else {
     var colors = new Array("red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink");
