@@ -48,7 +48,10 @@ Chat.prototype.message = function(nick,text) { return {color: this.config.messag
 Chat.prototype.announcement = function(text) { return {color: this.config.serverColor, bold: true, text: this.announcementText(text)}; }
 Chat.prototype.selfAnnouncement = function(nick,text) { return {at: [nick], color: this.config.serverColor, bold: true, text: this.announcementText(text)}; }
 
-Chat.prototype.process = function(nick,text,mode) {
+Chat.prototype.process = function(nick,origText,mode) {
+  text = origText;
+  for(var key in this.config.replace)
+    text = text.replace(key,this.config.replace[key]);
   if(text.indexOf("/")==0) {
     var func = this.parse(text)[0];
     if(_.contains(this.allowedCommands,func))

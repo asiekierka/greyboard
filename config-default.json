@@ -5,7 +5,8 @@
     "messageColor": "#101010",
     "serverColor": "#205080",
     "meColor": "#701070",
-    "disabled": []
+    "disabled": [],
+    "replace": {"<3": "♥"}
   },
   "room": {
     "width": 800,
