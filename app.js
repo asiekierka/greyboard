@@ -50,7 +50,7 @@ function sendPNG(req,res,room,asAttachment) {
 }
 
 function sendRoomIndex(req,res,room) {
-  var localIndex = templates.room({ room: room, socketURL: config.socketURL });
+  var localIndex = templates.room({ room: room });
   res.type("text/html");
   res.send(localIndex);
 }
