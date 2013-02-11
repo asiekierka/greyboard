@@ -26,6 +26,7 @@ templates.room = createTemplate("room");
 templates.roomList = createTemplate("roomlist");
 
 var config = _.defaults(configFile,configDef);
+config.mode = "server";
 
 for(var key in config)
   if(_.isObject(config[key]))
@@ -47,15 +48,19 @@ function sendPNG(req,res,room,asAttachment) {
     res.end();
     return;
   }
-  Room.get(room).sendPNG(req,res,asAttachment);
+  try {
+    Room.get(room).sendPNG(req,res,asAttachment);
+  } catch(e) { res.send(500,{ error: e.message }); }
 }
 
 function sendTemplate(res,tpl,config) {
-  var localIndex = tpl(config);
-  res.type("text/html");
-  res.send(localIndex);
+  try {
+    var localIndex = tpl(config);
+    res.type("text/html");
+    res.send(localIndex);
+  } catch(e) { res.send(500,{ error: e.message }); }
 }
-function sendRoomIndex(res,room) { sendTemplate(res,templates.room,{room: room}); }
+function sendRoomIndex(res,roomName) { sendTemplate(res,templates.room,{room: roomName}); }
 
 function splitURL(url) {
   if(url.indexOf("/") == 0)
@@ -68,8 +73,8 @@ function splitURL(url) {
 app.use(function(req,res,next){
   var url = req.url;
   var cmds = splitURL(url);
-  if(cmds.length==0 || (cmds.length==1 && cmds[0] == '')) // Default
-    cmds = ['list'];
+  if(cmds.length==0 || (cmds.length==1 && cmds[0] == ''))
+    cmds = ['list']; // Default
   var cmd = cmds[0];
   if(blockedDirs.indexOf(cmd)>=0) { // css, fonts, img, etc.
     res.writeHead(403,{});
@@ -86,8 +91,8 @@ app.use(function(req,res,next){
     }
     var room = cmds[1] || "default"
       , params = cmds[2] || "";
-    if(params.indexOf("canvas")>=0) { sendPNG(req,res,room,false); }
-    else if(params.indexOf("download")>=0) { sendPNG(req,res,room,true); }
+    if(params.indexOf("canvas")==0) { sendPNG(req,res,room,false); }
+    else if(params.indexOf("download")==0) { sendPNG(req,res,room,true); }
     else { sendRoomIndex(res,room); }
   }
 });
@@ -121,9 +126,8 @@ function flushBuffer() {
   setTimeout(flushBuffer,50);
 }
 
-function sendCommand(room,cmd) {
-  if(_.isObject(cmd) && _.isObject(room))
-    room.buffer.push(cmd);
+function draw(cmd,room) {
+  drawCommand(cmd,room.canvas,{mode: config.mode, room: room.config});
 }
 
 flushBuffer();
@@ -154,15 +158,13 @@ io.sockets.on('connection', function(socket) {
   });
 
   socket.on('draw_command', function(data) {
-    console.log("Received drawCommand: " + data);
     try {
       var cmd = data;
       if(properCommand(cmd) && Room.findUserRoom(socket.id)) {
         var room = Room.findUserRoom(socket.id);
-        var canvas = room.canvas;
-        if(drawCommand(cmd,canvas,"server")) {
+        if(draw(cmd,room)) {
           cmd.id = socket.id;
-          sendCommand(room,cmd);
+          room.sendCommand(cmd);
         }
       }
     } catch(e) {

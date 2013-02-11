@@ -118,13 +118,8 @@
 </div>
 <script src="/js/LAB.min.js"></script>
 <script>
-  var config = {};
-  config.room = '<%= room %>';
+  var config = {mode: "client", roomName: "<%= room %>", canvasId: "canv", colorPickerId: "colorpicker", toolboxId: "tools"};
   config.socketWaitTime = 100;
-  /* HTML file specific */
-  config.canvasId = "canv";
-  config.colorPickerId = "colorpicker";
-  config.toolboxId = "tools";
   /* Loaded files */
   $LAB
   .script("/socket.io/socket.io.js")
@@ -137,6 +132,7 @@
   .script("/js/bootstrap.min.js")
   .script("/lib/colorpicker.js")
   .script("/lib/grayboard-canvas.js")
+  .script("/js/jquery.mousewheel.js")
   .script("/js/jquery-ui-1.10.0.custom.min.js").wait()
   .script("/lib/grayboard.js")
   .wait(function() {

@@ -13,7 +13,10 @@
     "height": 480,
     "nickname": "Anonymous",
     "autoBackup": false,
-    "public": true
-  }
+    "public": true,
+    "minBrushSize": 1,
+    "maxBrushSize": 50,
+    "brushSize": 10
+  },
 }
 

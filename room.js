@@ -19,7 +19,12 @@ var Room = function(name,defConfig) {
   this.autoBackup();
   this.users = new Array();
 }
+
+// Constants
 Room.rooms = new Array();
+Room.whitelistedKeys = ["width","height","minBrushSize","brushSize","maxBrushSize","public"];
+
+// Stuff
 Room.create = function(name,config) {
   if(_.isUndefined(Room.rooms[name]))
     Room.rooms[name] = new Room(name,config);
@@ -50,6 +55,11 @@ Room.get = function(name) { return Room.rooms[name]; }
 Room.prototype.getChannel = function() { return Room.getChannel(this.name); }
 Room.prototype.getName = function() { return this.name; }
 Room.prototype.getPath = function() { return "rooms/" + this.name + "/"; }
+Room.prototype.sendCommand = function(cmd) {
+  if(_.isObject(cmd))
+    this.buffer.push(cmd);
+}
+
 
 // Config load/save
 Room.prototype.loadConfig = function(defConfig) {
@@ -63,7 +73,7 @@ Room.prototype.loadConfig = function(defConfig) {
 }
 
 Room.prototype.getInitCmd = function() {
-  return {width: this.width, height: this.height};
+  return _.pick(this.config,Room.whitelistedKeys);
 }
 
 // User handling
@@ -124,11 +134,13 @@ Room.prototype.autoBackup = function() {
 Room.prototype.loadBackup = function() { this.loadPNG(this.getPath() + 'canvas.png'); }
 
 Room.prototype.loadPNG = function(path) {
-  if(fs.existsSync(path)) {
-    var img = new NodeCanvas.Image;
-    img.src = fs.readFileSync(path);
-    this.canvas.canvas.drawImage(img,(this.width-img.width)/2,(this.height-img.height)/2,img.width,img.height);
-  }
+  try {
+    if(fs.existsSync(path)) {
+      var img = new NodeCanvas.Image;
+      img.src = fs.readFileSync(path);
+      this.canvas.canvas.drawImage(img,(this.width-img.width)/2,(this.height-img.height)/2,img.width,img.height);
+    }
+  } catch(e) {}
 }
 Room.prototype.savePNG = function(path) {
   var out = fs.createWriteStream(path)
