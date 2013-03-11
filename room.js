@@ -81,12 +81,7 @@ Room.prototype.addUser = function(user) { user.room = this; this.users[user.id] 
 Room.prototype.getUser = function(id) { return this.users[id]; }
 Room.prototype.removeUser = function(id) { delete this.users[id]; }
 Room.findUserRoom = function(id) {
-  for(var r in Room.rooms) {
-    room = Room.get(r);
-    if(_.isObject(room.getUser(id)))
-      return room;
-  }
-  return null;
+  return _.find(Room.rooms,function(room) { return _.isObject(room.getUser(id)); });
 }
 Room.findUserRoomName = function(id) {
   var r = Room.findUserRoom(id);

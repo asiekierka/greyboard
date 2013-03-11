@@ -127,7 +127,7 @@ function flushBuffer() {
 }
 
 function draw(cmd,room) {
-  drawCommand(cmd,room.canvas,{mode: config.mode, room: room.config});
+  return drawCommand(cmd,room.canvas,{mode: config.mode, room: room.config});
 }
 
 flushBuffer();
