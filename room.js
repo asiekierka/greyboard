@@ -81,7 +81,7 @@ Room.prototype.addUser = function(user) { user.room = this; this.users[user.id] 
 Room.prototype.getUser = function(id) { return this.users[id]; }
 Room.prototype.removeUser = function(id) { delete this.users[id]; }
 Room.findUserRoom = function(id) {
-  return _.find(Room.rooms,function(room) { return _.isObject(room.getUser(id)); });
+  return _.find(_.values(Room.rooms),function(room) { return _.isObject(room.getUser(id)); });
 }
 Room.findUserRoomName = function(id) {
   var r = Room.findUserRoom(id);
@@ -126,6 +126,7 @@ Room.prototype.autoBackup = function() {
   this.savePNG(this.getPath() + 'canvas.png');
   setTimeout(function(){ room.autoBackup(true); }, this.config.autoBackupTime*1000);
 }
+
 Room.prototype.loadBackup = function() { this.loadPNG(this.getPath() + 'canvas.png'); }
 
 Room.prototype.loadPNG = function(path) {

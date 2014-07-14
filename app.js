@@ -6,6 +6,8 @@ var express = require('express')
   , fs = require("fs")
   , _ = require('underscore');
 
+io.set("origins","*asie.pl*:*");
+
 // People would murder for this line. It's really bad.
 eval(fs.readFileSync('lib/grayboard-util.js','utf8'));
 eval(fs.readFileSync('lib/grayboard-canvas.js','utf8'));
@@ -137,12 +139,13 @@ io.sockets.on('connection', function(socket) {
   socket.on('join_room', function(data) {
     roomName = Room.getName(data);
     socket.join(data);
-    var room = Room.create(roomName,config.room);
+    var room = Room.create(roomName, config.room);
     var chat = new Chat(room,config.chat);
     var user = new User(socket,"");
     user.genNickname(room.config.nickname);
     room.addUser(user);
     room.chat = chat;
+	console.log(room);
     socket.emit('init',room.getInitCmd());
     sendChat(socket,null,chat.process('','Welcome to room ' + roomName + '!','server'));
     sendChat(socket.broadcast.to(data),null,chat.process("",user.nickname + " has joined the room!","server"));
