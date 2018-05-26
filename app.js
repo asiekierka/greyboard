@@ -1,12 +1,9 @@
-var express = require('express')
+const express = require('express')
   , app = express()
   , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server)
-  , JSON = require('JSON2')
+  , SocketServer = require('socket.io')
   , fs = require("fs")
   , _ = require('underscore');
-
-io.set("origins","*asie.pl*:*");
 
 // People would murder for this line. It's really bad.
 eval(fs.readFileSync('lib/grayboard-util.js','utf8'));
@@ -33,6 +30,12 @@ config.mode = "server";
 for(var key in config)
   if(_.isObject(config[key]))
     config[key] = _.defaults(configFile[key],configDef[key]);
+
+var socketCfg = {};
+if (config.socket_origins != "*") {
+	socketCfg.origins = config.socket_origins;
+}
+const io = new SocketServer(server, socketCfg);
 
 server.listen(config.port);
 
@@ -99,7 +102,7 @@ app.use(function(req,res,next){
   }
 });
 
-function getRoomSocket(room) { return io.sockets.in(room.getChannel()); }
+function getRoomSocket(room) { return io.in(room.getChannel()); }
 function getUserSocket(user) {
   if(!(_.isObject(user))) return null;
   return user.socket;
@@ -121,7 +124,7 @@ function flushBuffer() {
   for(var key in Room.rooms) {
     var room = Room.rooms[key];
     if(_.isObject(room) && room.buffer.length > 0) {
-      io.sockets.in(room.getChannel()).emit('draw_commands',room.buffer);
+      io.in(room.getChannel()).emit('draw_commands',room.buffer);
       room.buffer = [];
     }
   }
@@ -134,8 +137,7 @@ function draw(cmd,room) {
 
 flushBuffer();
 
-io.sockets.on('connection', function(socket) {
-
+io.on('connection', function(socket) {
   socket.on('join_room', function(data) {
     roomName = Room.getName(data);
     socket.join(data);
@@ -145,7 +147,6 @@ io.sockets.on('connection', function(socket) {
     user.genNickname(room.config.nickname);
     room.addUser(user);
     room.chat = chat;
-	console.log(room);
     socket.emit('init',room.getInitCmd());
     sendChat(socket,null,chat.process('','Welcome to room ' + roomName + '!','server'));
     sendChat(socket.broadcast.to(data),null,chat.process("",user.nickname + " has joined the room!","server"));

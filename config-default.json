@@ -1,6 +1,7 @@
 { "_comment": "THIS CONFIG FILE CONTAINS DEFAULT INFORMATION.",
   "_comment2": "CHANGE CONFIG.JSON INSTEAD.",
   "port": 80,
+  "socket_origins": "*",
   "chat": {
     "messageColor": "#101010",
     "serverColor": "#205080",
@@ -17,6 +18,5 @@
     "minBrushSize": 1,
     "maxBrushSize": 50,
     "brushSize": 10
-  },
+  }
 }
-

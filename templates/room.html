@@ -3,7 +3,9 @@
 <head>
   <title>Greyboard</title>
   <link rel="stylesheet" href="/fonts/font-awesome.min.css">
-  <link rel="stylesheet" href="/css/ui-lightness/jquery-ui-1.10.0.custom.min.css">
+  <link rel="stylesheet" href="/css/ui-lightness/jquery-ui.min.css">
+  <link rel="stylesheet" href="/css/ui-lightness/jquery-ui.structure.min.css">
+  <link rel="stylesheet" href="/css/ui-lightness/jquery-ui.theme.min.css">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/greyboard.css">
   <style>
@@ -123,17 +125,16 @@
   /* Loaded files */
   $LAB
   .script("/socket.io/socket.io.js")
-  .script("/js/tinycolor.js")
-  .script("/js/URI.min.js")
-  .script("/js/json2.js")
-  .script("/js/underscore-min.js")
+  .script("/js/tinycolor.min.js")
+  .script("/js/json2.min.js")
+  .script("/js/underscore.min.js")
+  .script("/js/jquery-3.3.1.min.js").wait()
   .script("/lib/grayboard-util.js")
-  .script("/js/jquery-1.9.0.min.js").wait()
   .script("/js/bootstrap.min.js")
   .script("/lib/colorpicker.js")
   .script("/lib/grayboard-canvas.js")
-  .script("/js/jquery.mousewheel.js")
-  .script("/js/jquery-ui-1.10.0.custom.min.js").wait()
+  .script("/js/jquery.mousewheel.min.js")
+  .script("/js/jquery-ui.min.js").wait()
   .script("/lib/grayboard.js")
   .wait(function() {
     initGrayboard();
