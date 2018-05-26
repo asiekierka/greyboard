@@ -43,4 +43,3 @@ On the client side only:
 * JQuery-ui [being phased out, used only for slider]
 * Twitter Bootstrap
 * LAB.js [async loading]
-* URI.js
